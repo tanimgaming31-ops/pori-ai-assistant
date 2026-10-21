@@ -149,16 +149,12 @@ class PoriController(private val context: Context) {
         log("you", heard)
 
         _state.value = PoriState.THINKING
-        var speakTag: String?
-        val text: String
-        try {
-            val (tag, body) = splitLang(agent.ask(heard))
-            speakTag = tag
-            text = body
-            if (tag != null && auto) lastLang = tag
+        val (speakTag, text) = try {
+            val (langTag, body) = splitLang(agent.ask(heard))
+            if (langTag != null && auto) lastLang = langTag
+            langTag to body
         } catch (e: Exception) {
-            speakTag = "en-US"
-            text = friendlyError(e)
+            "en-US" to friendlyError(e)
         }
         log("pori", text)
 
