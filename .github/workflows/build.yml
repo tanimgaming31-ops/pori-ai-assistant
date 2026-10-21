@@ -1,4 +1,6 @@
 name: Build APK
+permissions:
+  contents: write
 on:
   push:
     branches: [main]
@@ -30,3 +32,10 @@ jobs:
         with:
           name: pori-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish APK as a release (direct download link)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk Pori-debug.apk
+          gh release delete latest -y --cleanup-tag || true
+          gh release create latest Pori-debug.apk --title "Pori (latest build)" --notes "Debug APK built from the latest commit on main." --target "${{ github.sha }}"
